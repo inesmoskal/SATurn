@@ -88,7 +88,7 @@ class ProteinCancerEssentialAnnotation {
                                     .interactionResult{padding:3px 10px ;}
                                     </style>
                                     <div class="divMainDiv">
-                                    <div class="divTitle">Essentiality in Cancer (CRISPR) - '+screenData.target+'</div>
+                                    <div class="divTitle">Essentiality in Cancer (CRISPR [Broad]) - '+screenData.target+'</div>
                                     <div class="divContent">
                                         <table>
                                             <tr class="first_tr" style="font-size:12">
@@ -113,16 +113,18 @@ class ProteinCancerEssentialAnnotation {
         var cancerScore = null;
         var cancerTypes = null;
 
-        if(form.form.findField('essentiality_rnai').lastValue){
-            annotationManager.cleanAnnotResults(31);
-            cancerEssentialRNAiFunction(31, form, tree_type, family, searchGenes, annotationManager, cb);
-            annotationManager.skipCurrentLegend[annotation] = true;
-            annotationManager.activeAnnotation[31] = true;
-            WorkspaceApplication.getApplication().getSingleAppContainer().addImageToLegend(annotationManager.annotations[31].legend, 31);
-        } else {
-            annotationManager.activeAnnotation[31] = false;
-            annotationManager.cleanAnnotResults(31);
-            WorkspaceApplication.getApplication().getSingleAppContainer().removeComponentFromLegend(31);
+        if(form.form.findField('essentiality_rnai')) {
+            if(form.form.findField('essentiality_rnai').lastValue){
+                annotationManager.cleanAnnotResults(31);
+                cancerEssentialRNAiFunction(31, form, tree_type, family, searchGenes, annotationManager, cb);
+                annotationManager.skipCurrentLegend[annotation] = true;
+                annotationManager.activeAnnotation[31] = true;
+                WorkspaceApplication.getApplication().getSingleAppContainer().addImageToLegend(annotationManager.annotations[31].legend, 31);
+            } else {
+                annotationManager.activeAnnotation[31] = false;
+                annotationManager.cleanAnnotResults(31);
+                WorkspaceApplication.getApplication().getSingleAppContainer().removeComponentFromLegend(31);
+            }
         }
 
         if(form.form.findField('essentiality_crispr_sanger').lastValue){
@@ -167,7 +169,6 @@ class ProteinCancerEssentialAnnotation {
                             // We get here for tree view
                             annotationManager.addAnnotData(db_results, annotation, 0, function(){
                                 annotationManager.canvas.redraw();
-
                                 cb(db_results, null);
                             });
                         }
@@ -393,7 +394,7 @@ class ProteinCancerEssentialAnnotation {
                                     .interactionResult{padding:3px 10px ;}
                                     </style>
                                     <div class="divMainDiv">
-                                    <div class="divTitle">Cancer Dependency (CRISPR [Sanger] ) - '+screenData.target+'</div>
+                                    <div class="divTitle">Cancer Dependency (CRISPR [Sanger]) - '+screenData.target+'</div>
                                     <div class="divContent">
                                         <table>
                                             <tr class="first_tr" style="font-size:12">
@@ -421,7 +422,6 @@ class ProteinCancerEssentialAnnotation {
         if(form != null){
             // We get here for tree annotation requests
             cancerScore = form.form.findField('cancer_score_sanger').lastValue;
-
             cancerTypes = form.form.findField('cancer_types_sanger').lastValue;
         }else{
 

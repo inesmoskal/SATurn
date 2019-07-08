@@ -1000,7 +1000,7 @@ class ChromoHubViewer  extends SimpleExtJSProgram  {
 
             if( annotationManager.annotations[1]!=null && annotationManager.annotations[1].fromresults!=null) annotationManager.annotations[1].fromresults[1]=0;
             if(treeName==''){
-                if(annotationManager.searchedGenes.length==0) WorkspaceApplication.getApplication().showMessage('Alert','Use the search box on your righ to add genes.');
+                if(annotationManager.searchedGenes.length==0) WorkspaceApplication.getApplication().showMessage('Alert','Use the search box on your right to add genes.');
                 else{
                     renderTable();
                 }

@@ -1043,27 +1043,16 @@ class ChromoHubHooks {
         var treeType = params[0].treeType;
         if(treeType == 'gene'){
             sql = "
-               SELECT
-                    distinct ftj.target_id, null name_index, v.variant_index, ec.median_score
-               FROM
-                    family_target_join ftj, variant v, essentiality_cancer_crispr ec
-               WHERE
-                    " + sqlFamilyOrListConstraint + " AND
-                    ftj.target_id = v.target_id AND
-                    ec.target_id = ftj.target_id
-               ";
+                SELECT DISTINCT t.id AS target_id, t.pkey, null name_index, v.variant_index, t.geneid
+                FROM target t,  family_target_join ftj, variant v, essentiality_cancer_crispr_broad c
+                WHERE " + sqlFamilyOrListConstraint + " AND ftj.target_id=t.id AND t.id = v.target_id AND v.is_default =1
+                AND c.gene_id = t.geneid";
         }else{
             sql = "
-                SELECT
-                    distinct ftj.target_id, null name_index, v.variant_index, ec.median_score
-                FROM
-                    family_target_join ftj, variant v, essentiality_cancer_crispr ec
-                WHERE
-                    " + sqlFamilyOrListConstraint + " AND
-                    ftj.target_id = v.target_id AND
-                    ec.target_id = ftj.target_id AND
-                    v.is_default = 1
-            ";
+                SELECT DISTINCT t.id AS target_id, t.pkey, dh.name_index AS target_name_index, dh.variant_index, t.geneid
+                FROM target t, domain_highlighted dh, essentiality_cancer_crispr_broad c, family_target_join ftj
+                WHERE " + sqlFamilyOrListConstraint + " AND dh.family_id = ftj.family_id AND dh.target_id = t.id AND dh.on_tree = 1
+                AND c.gene_id = t.geneid";
         }
 
         if(cancerTypes[0] != 'All'){
@@ -1073,14 +1062,14 @@ class ChromoHubHooks {
                 boundParameters.push(cancerType);
             }
 
-            sql += ' AND ec.primary_disease IN (' + placeHolders.join(',') + ')';
+            sql += ' AND c.primary_disease IN (' + placeHolders.join(',') + ')';
         }
 
         if(cancerScore != null){
-            sql += ' AND ec.median_score <= ?';
+            sql += ' AND c.median_score <= ?';
             boundParameters.push(cancerScore);
         }
-
+        sql += ' ORDER BY t.id';
 
         runBasicQuery(sql, boundParameters, cb);
     }
@@ -1165,30 +1154,17 @@ class ChromoHubHooks {
         var treeType = params[0].treeType;
         if(treeType == 'gene'){
             sql = "
-               SELECT
-                    distinct ftj.target_id, null name_index, v.variant_index, ec.median_score, t.uniprot
-               FROM
-                    target t, family_target_join ftj, variant v, essentiality_cancer_crispr_logfc ec
-               WHERE
-                    " + sqlFamilyOrListConstraint + " AND
-                    ftj.target_id = t.id AND
-                    ftj.target_id = v.target_id AND
-                    ec.uniprot_id = t.uniprot AND
-                    v.is_default = 1
-               ";
+                SELECT DISTINCT ftj.target_id, null name_index, v.variant_index, t.uniprot
+				FROM target t,  family_target_join ftj, variant v, essentiality_cancer_crispr_logfc c
+		        WHERE " + sqlFamilyOrListConstraint + " AND ftj.target_id=t.id AND t.id = v.target_id AND v.is_default =1
+				AND c.uniprot_id = t.uniprot";
+
         }else{
             sql = "
-                SELECT
-                    distinct ftj.target_id, null name_index, v.variant_index, ec.median_score, t.uniprot
-                FROM
-                    target t, family_target_join ftj, variant v, essentiality_cancer_crispr_logfc ec
-                WHERE
-                    " + sqlFamilyOrListConstraint + " AND
-                    ftj.target_id = t.id AND
-                    ftj.target_id = v.target_id AND
-                    ec.uniprot_id = t.uniprot AND
-                    v.is_default = 1
-            ";
+                SELECT DISTINCT d.target_id, d.name_index AS target_name_index, d.variant_index, t.uniprot
+                FROM target t,  domain_highlighted d, essentiality_cancer_crispr_logfc c, family_target_join ftj
+                WHERE " + sqlFamilyOrListConstraint + " AND ftj.family_id = d.family_id AND t.id=d.target_id AND d.on_tree=1
+                AND c.uniprot_id = t.uniprot";
         }
 
         if(cancerTypes[0] != 'All'){
@@ -1198,14 +1174,14 @@ class ChromoHubHooks {
                 boundParameters.push(cancerType);
             }
 
-            sql += ' AND ec.tissue IN (' + placeHolders.join(',') + ')';
+            sql += ' AND c.tissue IN (' + placeHolders.join(',') + ')';
         }
 
         if(cancerScore != null){
-            sql += ' AND ec.median_score <= ?';
+            sql += ' AND c.median_score <= ?';
             boundParameters.push(cancerScore);
         }
-
+        sql += ' ORDER BY t.id';
 
         runBasicQuery(sql, boundParameters, cb);
 
