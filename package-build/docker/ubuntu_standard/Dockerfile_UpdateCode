@@ -1,0 +1,22 @@
+﻿FROM saturn 
+
+MAINTAINER David Damerell <david.damerell@sgc.ox.ac.uk>
+
+USER saturn
+COPY . /home/saturn/SATurn
+USER root
+RUN chown -R saturn:users /home/saturn/SATurn
+USER saturn
+RUN rm -rf /home/saturn/SATurn/build/node_modules
+ENV NVM_DIR /home/saturn/.nvm
+RUN . $NVM_DIR/nvm.sh && nvm install --lts && \
+nvm alias default lts/* && \
+cd /home/saturn/SATurn/build && \
+npm update && \
+npm install
+USER root
+
+
+
+
+
