@@ -251,7 +251,8 @@ class SGC {
                     'sourceId' => 'SOURCEID',
                     'sequenceConfirmed'=> 'SEQUENCECONFIRMED',
                     'elnId' => 'ELNEXPERIMENTID',
-                    'complex' => 'COMPLEX'
+                    'complex' => 'COMPLEX',
+                        'complexOverride'=>'COMPLEXOVERRIDE'
                 ],
                 'indexes'=>[
                     'entryCloneId'=>false,

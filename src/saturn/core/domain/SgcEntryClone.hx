@@ -24,6 +24,7 @@ class SgcEntryClone extends DNA{
     public var complex : String;
 
     public var proteinSequenceObj : Protein;
+    public var complexOverride : String;
 
     public function new(){
         super(null);

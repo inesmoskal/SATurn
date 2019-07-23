@@ -171,6 +171,7 @@ class ComplexPlan extends Table{
                     complexEntryClone.complex = 'Yes';
                     complexEntryClone.seqSource = 'NA';
                     complexEntryClone.sequenceConfirmed = 'NA';
+                    complexEntryClone.complexOverride = '20f99f97-6e0d-46ba-8010-e4bd7880d591';
 
                     var complexAllele = new SgcAllele();
                     complexAllele.elnId = eln;
