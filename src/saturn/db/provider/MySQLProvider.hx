@@ -27,7 +27,7 @@ class MySQLProvider extends GenericRDBMSProvider{
             }else{
                 var cols = new Array<String>();
                 for(row in rows){
-                    cols.push(row.Field);
+                    cols.push(row.Field.toUpperCase());
                 }
 
                 cb(null, cols);
