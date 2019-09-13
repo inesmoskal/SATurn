@@ -167,6 +167,16 @@ class ProteinStructureAnnotation {
         var xray:String;
 
         if(form!=null){
+            //Store user's selections as an object in browser
+            var  viewer =  cast(WorkspaceApplication.getApplication().getActiveProgram(), ChromoHubViewer);
+            var stateObj = {
+                'oplist': form.form.findField('oplist').lastValue,
+                'cutoff': form.form.findField('cutoff').lastValue,
+                'xray': form.form.findField('xray').lastValue
+            };
+            viewer.registerState(annotation, stateObj);
+            viewer.saveCurrentWorkspace();
+
             aux=form.form.findField('oplist');
             option=aux.lastValue.structure;
 

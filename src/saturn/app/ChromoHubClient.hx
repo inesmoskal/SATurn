@@ -24,15 +24,24 @@ class ChromoHubClient extends SaturnClient{
     //REF: override
     override public function afterLoad(){
         // Creates a ChromoHub object
-        var prog = new ChromoHubViewer();
 
-        var obj = new ChromoHubWorkspaceObject(new Alignment(), "Tree");
-        obj.standaloneMode = true;
 
-        getWorkspace().registerObjectWith(obj,prog);
 
-        SomaticMutationAnnotation.updateSomaticDiseaseList(function(error){
+        getWorkspace().getWorkspaceNames(function(names : Array<String>){
+            if(names.length > 0){
+                getWorkspace().openDefaultWorkspace();
+            }else{
+                var prog = new ChromoHubViewer();
 
+                var obj = new ChromoHubWorkspaceObject(new Alignment(), "Tree");
+                obj.standaloneMode = true;
+
+                getWorkspace().registerObjectWith(obj,prog);
+            }
+
+            SomaticMutationAnnotation.updateSomaticDiseaseList(function(error){
+
+            });
         });
     }
 
@@ -100,6 +109,7 @@ class ChromoHubClient extends SaturnClient{
         #else
         //var prog : saturn.client.programs.ChromoHubViewer = getActiveProgram();
         var prog = cast(getActiveProgram(), ChromoHubViewer);
+        prog.getAnnotationManager().setTreeType('gene');
        // prog.searchedGenes[prog.searchedGenes.length]=targetId;
         prog.showAddedGenes(targetId );
         #end

@@ -755,8 +755,11 @@ class SimpleExtJSProgram extends BaseProgram implements BuildingBlock implements
     }
 
     override public function setSaveVisible(visible : Bool) {
-        saveButton.setVisible(visible);
-        deleteButton.setVisible(visible);
+        if(saveButton != null){
+            saveButton.setVisible(visible);
+            deleteButton.setVisible(visible);
+        }
+
 
         if(visible){
             getApplication().installOutlineTree('MODELS',true, false, 'WorkspaceObject', 'GRID');

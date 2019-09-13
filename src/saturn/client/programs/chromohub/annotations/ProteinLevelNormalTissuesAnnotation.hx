@@ -125,6 +125,34 @@ class ProteinLevelNormalTissuesAnnotation {
 
         var cancer_type:String;
 
+        //Store user's selections as an object in browser
+        var  viewer =  cast(WorkspaceApplication.getApplication().getActiveProgram(), ChromoHubViewer);
+        var stateObj = {
+            'protein_option_normal': form.form.findField('protein_option_normal').lastValue,
+            'tissues': form.form.findField('tissues').lastValue,
+            'cell_types': form.form.findField('cell_types').lastValue,
+            'protein_level_high': form.form.findField('protein_level_high').lastValue,
+            'protein_level_medium': form.form.findField('protein_level_medium').lastValue,
+            'protein_level_low': form.form.findField('protein_level_low').lastValue,
+            'protein_level_not_detected': form.form.findField('protein_level_not_detected').lastValue,
+            'protein_reliability_approved': form.form.findField('protein_reliability_approved').lastValue,
+            'protein_reliability_enhanced': form.form.findField('protein_reliability_enhanced').lastValue,
+            'protein_reliability_supported': form.form.findField('protein_reliability_supported').lastValue,
+            'protein_reliability_uncertain': form.form.findField('protein_reliability_uncertain').lastValue,
+            'perc_protein_option': form.form.findField('perc_protein_option').lastValue,
+            'perc_protein_level_high': form.form.findField('perc_protein_level_high').lastValue,
+            'perc_protein_level_medium': form.form.findField('perc_protein_level_medium').lastValue,
+            'perc_protein_level_low': form.form.findField('perc_protein_level_low').lastValue,
+            'perc_protein_level_not_detected': form.form.findField('perc_protein_level_not_detected').lastValue,
+            'in_percentage': form.form.findField('in_percentage').lastValue,
+            'perc_protein_reliability_approved': form.form.findField('perc_protein_reliability_approved').lastValue,
+            'perc_protein_reliability_enhanced': form.form.findField('perc_protein_reliability_enhanced').lastValue,
+            'perc_protein_reliability_supported': form.form.findField('perc_protein_reliability_supported').lastValue,
+            'perc_protein_reliability_uncertain': form.form.findField('perc_protein_reliability_uncertain').lastValue
+        };
+        viewer.registerState(annotation, stateObj);
+        viewer.saveCurrentWorkspace();
+
         if(form.form.findField('perc_protein_option').lastValue){
             annotationManager.cleanAnnotResults(29);
             hasNormalLevelPercentageFunction(29, form, tree_type, family, searchGenes, annotationManager, cb);
@@ -137,7 +165,7 @@ class ProteinLevelNormalTissuesAnnotation {
             WorkspaceApplication.getApplication().getSingleAppContainer().removeComponentFromLegend(29);
         }
 
-        if(form.form.findField('protein_option').lastValue){
+        if(form.form.findField('protein_option_normal').lastValue){
             annotationManager.activeAnnotation[annotation] = true;
             WorkspaceApplication.getApplication().getSingleAppContainer().addImageToLegend(annotationManager.annotations[annotation].legend, annotation);
 
@@ -328,7 +356,6 @@ class ProteinLevelNormalTissuesAnnotation {
     }
 
     static function hasNormalLevelPercentageFunction (annotation : Int, form : Dynamic, tree_type : String, family : String, searchGenes : Array<Dynamic>, annotationManager : ChromoHubAnnotationManager, cb : Dynamic->String->Void){
-
         var proteinLevels = [];
         var reliability = [];
         var percentage = null;

@@ -158,7 +158,7 @@ class EXTApplication extends WorkspaceApplication{
 
                     initApplication();
 
-                    afterLoad();
+
                 }
             });
         });
@@ -963,7 +963,7 @@ class EXTApplication extends WorkspaceApplication{
     }
     
     override function createNavigationPanel(navTitle : String) {
-		theWorkspace = new Workspace();
+
 		
 		if (isNaked()) {
 			return;

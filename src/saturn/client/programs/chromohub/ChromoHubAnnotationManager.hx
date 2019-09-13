@@ -185,7 +185,33 @@ class ChromoHubAnnotationManager extends PhyloAnnotationManager{
                                     container.setPopUpWindowTitle(tit);
 
                                     var optt=jsonFile.btnGroup[ia].buttons[za].windowsData[0];
-                                    container.addFormItemToPopUpWindow(optt.form.items,b.annotCode,optt.hasClass,optt.popMethod, this.treeType, this.treeName, null, this );
+
+                                    var prog = cast(WorkspaceApplication.getApplication().getActiveProgram(), ChromoHubViewer);
+
+                                    var items :Array<Dynamic> = optt.form.items;
+                                    var stateCache = prog.stateCache.get(b.annotCode);
+
+                                    for(item in items){
+                                        var subitem = [];
+
+                                        //Some items are nested within items
+                                        if (item.items && item.items.length) {
+                                            for (i in 0...item.items.length) {
+                                                //Multiple boxLabels for single option
+                                                if (item.items[i].boxLabel) {
+                                                    loadUserAnnotationValues(item, stateCache);
+                                                    continue;
+                                                }
+                                                subitem = item.items[i];
+                                                loadUserAnnotationValues(subitem, stateCache);
+                                            }
+                                        }
+                                        else {
+                                            loadUserAnnotationValues(item, stateCache);
+                                        }
+                                    }
+
+                                    container.addFormItemToPopUpWindow(items,b.annotCode,optt.hasClass,optt.popMethod, this.treeType, this.treeName, null, this );
                                     container.showPopUpWindow();
 
                                     // Load annotation.js
@@ -748,14 +774,18 @@ class ChromoHubAnnotationManager extends PhyloAnnotationManager{
 
                     var a=0;
                     Reflect.setField(d[i], 'Target', leaf.name);
+
                     for(a in 0 ... annotations.length){
                         if(a==12){
                             var iwanttostop=true;
                         }
                         if(results[a+1]!=null){
-                            //annotcode=11 doesnt exist
-                            if(a!=10)  Reflect.setField(d[i], annotations[a+1].label, results[a+1]);
-                            //if(a!=10)  Reflect.setField(d[i], "<a href='www.google.com'>"+annotations[a+1].label+"</a>", results[a+1]);
+                            if (annotlist[a+1]) { //Check if annotCode exists
+
+                                Reflect.setField(d[i], annotations[a+1].label, results[a+1]);
+                                //if(a!=10)  Reflect.setField(d[i], annotations[a+1].label, results[a+1]);
+                                //if(a!=10)  Reflect.setField(d[i], "<a href='www.google.com'>"+annotations[a+1].label+"</a>", results[a+1]);
+                            }
                         }
                     }
                 }
@@ -862,11 +892,11 @@ class ChromoHubAnnotationManager extends PhyloAnnotationManager{
                 var tt='';
                 for(a in 0 ... annotations.length){
                     if(results[a+1]!=null){
-
-                        //annotcode=11 doesnt exist
-                        if(a!=10){
-                            if(a+1==5) Reflect.setField(d[i], 'Family Domains', results[a+1]);
+                        if (annotlist[a+1]) { //Check if annotCode exists
+                        //if(a!=10){
+                            if (a+1==5) Reflect.setField(d[i], 'Family Domains', results[a+1]);
                             else Reflect.setField(d[i], annotations[a+1].label, results[a+1]);
+                        //}
                         }
                     }
                 }
@@ -923,100 +953,106 @@ class ChromoHubAnnotationManager extends PhyloAnnotationManager{
 
         // total+1 as min...max excludes max - i.e. min to max-1
         for(currentAnnot in 1...total+1){
-            // What is annotation 11?
-            if(currentAnnot==11){
-                completedAnnotations += 1;
-                onDone(null, currentAnnot);
-                continue;
-            }
 
-            var alias = annotlist[currentAnnot].hookName;
-            if(alias==''){
-                completedAnnotations += 1;
-                onDone(null, currentAnnot);
-                continue;
-            }
+            if (annotlist[currentAnnot]) { //Check if annotCode exists
 
-            var parameter:Dynamic;
-
-            //before calling the mysql select, we need to check the tree type (domain or gene)
-            if(treeName != ''){
-                if(treeType=='gene'){
-                    alias='gene_'+alias;
+                // What is annotation 11?
+                if(currentAnnot==11){
+                    completedAnnotations += 1;
+                    onDone(null, currentAnnot);
+                    continue;
                 }
 
-                parameter=this.treeName;
-
-                if(annotlist[currentAnnot].popup==false){
-                    var u =annotlist[currentAnnot].optionSelected[0];
-
-                    WorkspaceApplication.getApplication().getProvider().getByNamedQuery(alias,{param : parameter}, null, true, function(db_results, error){
-
-                        if(error == null) {
-                            addAnnotData(db_results,currentAnnot,u,function(){
-                                completedAnnotations += 1;
-                                onDone(null,currentAnnot);
-                            });
-                        }else {
-                            Util.debug(error);
-
-                            completedAnnotations += 1;
-                            onDone(error,currentAnnot);
-                        }
-                    });
-                }else{
-                    var l=currentAnnot;
-                    var popMethod=annotlist[currentAnnot].popMethod;
-                    var hasClass=annotlist[currentAnnot].hasClass;
-                    var hook = Reflect.field(Type.resolveClass(hasClass), popMethod);
-
-                    hook(currentAnnot,null,this.treeType,treeName,null,this, function(results, error){
-                        completedAnnotations += 1;
-
-                        //TODO: Why doesn't this method do anything!!!!!!!
-
-                        if(error == null){
-                            onDone(null, currentAnnot);
-                        }else{
-                            Util.debug(error);
-
-                            onDone(error, currentAnnot);
-                        }
-                    });
+                var alias = annotlist[currentAnnot].hookName;
+                if(alias==''){
+                    completedAnnotations += 1;
+                    onDone(null, currentAnnot);
+                    continue;
                 }
-            }else{
-                if(annotlist[currentAnnot].popup==false){
-                    alias='list_'+alias;
-                    var parameter=searchedGenes;
 
-                    if(this.treeType=='gene'){
+                var parameter:Dynamic;
+
+                //before calling the mysql select, we need to check the tree type (domain or gene)
+                if(treeName != ''){
+                    if(treeType=='gene'){
                         alias='gene_'+alias;
                     }
 
-                    WorkspaceApplication.getApplication().getProvider().getByNamedQuery(alias,{param : parameter}, null, true, function(db_results, error){
-                        if(error == null) {
-                            addAnnotDataGenes(db_results,currentAnnot,function(){
+                    parameter=this.treeName;
+
+                    if(annotlist[currentAnnot].popup==false){
+                        var u =annotlist[currentAnnot].optionSelected[0];
+
+                        WorkspaceApplication.getApplication().getProvider().getByNamedQuery(alias,{param : parameter}, null, true, function(db_results, error){
+
+                            if(error == null) {
+                                addAnnotData(db_results,currentAnnot,u,function(){
+                                    completedAnnotations += 1;
+                                    onDone(null,currentAnnot);
+                                });
+                            }else {
+                                Util.debug(error);
+
                                 completedAnnotations += 1;
+                                onDone(error,currentAnnot);
+                            }
+                        });
+                    }else{
+                        var l=currentAnnot;
+                        var popMethod=annotlist[currentAnnot].popMethod;
+                        var hasClass=annotlist[currentAnnot].hasClass;
+                        var hook = Reflect.field(Type.resolveClass(hasClass), popMethod);
 
-                                onDone(null, currentAnnot);
-                            });
-                        }else {
-                            WorkspaceApplication.getApplication().showMessage('Unknown',error);
+                        hook(currentAnnot,null,this.treeType,treeName,null,this, function(results, error){
                             completedAnnotations += 1;
-                            onDone(error, currentAnnot);
-                        }
-                    });
-                }else{
-                    var l=currentAnnot;
-                    var popMethod=annotlist[currentAnnot].popMethod;
-                    var hasClass=annotlist[currentAnnot].hasClass;
-                    var hook = Reflect.field(Type.resolveClass(hasClass), popMethod);
 
-                    hook(currentAnnot,null,this.treeType,treeName,searchedGenes,this, function(results, error){
-                        completedAnnotations += 1;
-                        onDone(null,currentAnnot);
-                    });
+                            //TODO: Why doesn't this method do anything!!!!!!!
+
+                            if(error == null){
+                                onDone(null, currentAnnot);
+                            }else{
+                                Util.debug(error);
+
+                                onDone(error, currentAnnot);
+                            }
+                        });
+                    }
+                }else{
+                    if(annotlist[currentAnnot].popup==false){
+                        alias='list_'+alias;
+                        var parameter=searchedGenes;
+
+                        if(this.treeType=='gene'){
+                            alias='gene_'+alias;
+                        }
+
+                        WorkspaceApplication.getApplication().getProvider().getByNamedQuery(alias,{param : parameter}, null, true, function(db_results, error){
+                            if(error == null) {
+                                addAnnotDataGenes(db_results,currentAnnot,function(){
+                                    completedAnnotations += 1;
+
+                                    onDone(null, currentAnnot);
+                                });
+                            }else {
+                                WorkspaceApplication.getApplication().showMessage('Unknown',error);
+                                completedAnnotations += 1;
+                                onDone(error, currentAnnot);
+                            }
+                        });
+                    }else{
+                        var l=currentAnnot;
+                        var popMethod=annotlist[currentAnnot].popMethod;
+                        var hasClass=annotlist[currentAnnot].hasClass;
+                        var hook = Reflect.field(Type.resolveClass(hasClass), popMethod);
+
+                        hook(currentAnnot,null,this.treeType,treeName,searchedGenes,this, function(results, error){
+                            completedAnnotations += 1;
+                            onDone(null,currentAnnot);
+                        });
+                    }
                 }
+            }else{
+                completedAnnotations += 1;
             }
         }
     }
@@ -1572,4 +1608,29 @@ class ChromoHubAnnotationManager extends PhyloAnnotationManager{
         }
     }
 
+    public function setTreeType(treeType: String){
+        this.treeType = treeType;
+    }
+
+    public function loadUserAnnotationValues(item:Array<Dynamic>, stateCache:Dynamic){
+        if(Reflect.hasField(item, 'id')) {
+            var id = Reflect.field(item, 'id');
+
+            if(stateCache && Reflect.hasField(stateCache, id)){
+                var savedValue = Reflect.field(stateCache, id);
+
+                var xtype = Reflect.field(item, 'xtype');
+
+                if(xtype == 'combobox'){
+                    Reflect.setField(item, 'value', savedValue);
+                } else if(xtype == 'checkboxfield'){
+                    Reflect.setField(item, 'checked', savedValue);
+                } else if(xtype == 'radiogroup'){
+                    Reflect.setField(item, 'value', savedValue);
+                } else if(xtype == 'textfield'){
+                    Reflect.setField(item, 'value', savedValue);
+                }
+            }
+        }
+    }
 }

@@ -113,6 +113,35 @@ class ProteinCancerEssentialAnnotation {
         var cancerScore = null;
         var cancerTypes = null;
 
+        //Store user's selections as an object in browser
+        var  viewer =  cast(WorkspaceApplication.getApplication().getActiveProgram(), ChromoHubViewer);
+        var stateObj = {};
+        if(form.form.findField('essentiality_rnai')) {
+            stateObj = {
+                'essentiality_crispr': form.form.findField('essentiality_crispr').lastValue,
+                'essentiality_crispr_cancer_score': form.form.findField('essentiality_crispr_cancer_score').lastValue,
+                'essentiality_crispr_cancer_types': form.form.findField('essentiality_crispr_cancer_types').lastValue,
+                'essentiality_crispr_sanger': form.form.findField('essentiality_crispr_sanger').lastValue,
+                'essentiality_crispr_sanger_cancer_score': form.form.findField('essentiality_crispr_sanger_cancer_score').lastValue,
+                'essentiality_crispr_sanger_cancer_types': form.form.findField('essentiality_crispr_sanger_cancer_types').lastValue,
+                'essentiality_rnai': form.form.findField('essentiality_rnai').lastValue,
+                'essentiality_rnai_cancer_score': form.form.findField('essentiality_rnai_cancer_score').lastValue,
+                'essentiality_rnai_cancer_types': form.form.findField('essentiality_rnai_cancer_types').lastValue
+            };
+        }
+        else {
+            stateObj = {
+                'essentiality_crispr': form.form.findField('essentiality_crispr').lastValue,
+                'essentiality_crispr_cancer_score': form.form.findField('essentiality_crispr_cancer_score').lastValue,
+                'essentiality_crispr_cancer_types': form.form.findField('essentiality_crispr_cancer_types').lastValue,
+                'essentiality_crispr_sanger': form.form.findField('essentiality_crispr_sanger').lastValue,
+                'essentiality_crispr_sanger_cancer_score': form.form.findField('essentiality_crispr_sanger_cancer_score').lastValue,
+                'essentiality_crispr_sanger_cancer_types': form.form.findField('essentiality_crispr_sanger_cancer_types').lastValue,
+            };
+        }
+        viewer.registerState(annotation, stateObj);
+        viewer.saveCurrentWorkspace();
+
         if(form.form.findField('essentiality_rnai')) {
             if(form.form.findField('essentiality_rnai').lastValue){
                 annotationManager.cleanAnnotResults(31);

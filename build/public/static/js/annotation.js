@@ -1,8 +1,8 @@
 $("input[componentid^='protein_level'], .protein-cancer-type, input[componentid^='protein_reliability']").click(function(e) {		
-		if ($(this).closest(".x-field").siblings('#protein_option').hasClass('x-form-cb-checked')) {
+		if ($(this).closest(".x-field").siblings('[id^=protein_option]').hasClass('x-form-cb-checked')) {
 		}
 		else {
-				$(this).closest(".x-field").siblings('#protein_option').find('input').click();
+				$(this).closest(".x-field").siblings('[id^=protein_option]').find('input').click();
 		}
 })
 

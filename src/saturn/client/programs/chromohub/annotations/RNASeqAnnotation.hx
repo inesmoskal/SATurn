@@ -134,8 +134,6 @@ class RNASeqAnnotation {
 
     static function rnaSeqFunction (annotation:Int,form:Dynamic,tree_type:String, family:String,searchGenes:Array<Dynamic>,annotationManager:ChromoHubAnnotationManager,callback : Dynamic->String->Void){
         //we get the form values
-        //type
-
         var aux:Dynamic;
         var seq_evaluator,seqexp_fc_cutoff,seqexp_freq_cutoff,patient_seq_cutoff,seqexp_rank_cutoff:String;
 
@@ -147,6 +145,19 @@ class RNASeqAnnotation {
             patient_seq_cutoff='10';
             seqexp_rank_cutoff='1000';
         }else{
+            //Store user's selections as an object in browser
+            var  viewer =  cast(WorkspaceApplication.getApplication().getActiveProgram(), ChromoHubViewer);
+            var stateObj = {
+                'seq_evaluator': form.form.findField('seq_evaluator').lastValue,
+                'seqexp_fc_cutoff': form.form.findField('seqexp_fc_cutoff').lastValue,
+                'seqexp_freq_cutoff': form.form.findField('seqexp_freq_cutoff').lastValue,
+                'patient_seq_cutoff': form.form.findField('patient_seq_cutoff').lastValue,
+                'seqexp_rank_cutoff': form.form.findField('seqexp_rank_cutoff').lastValue
+            };
+            viewer.registerState(annotation, stateObj);
+            viewer.saveCurrentWorkspace();
+
+
             aux=form.form.findField('seq_evaluator');
             seq_evaluator = aux.lastValue;
 

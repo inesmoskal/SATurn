@@ -113,6 +113,24 @@ class ProteinTumorLevelAnnotation {
         var cancer_type:String;
         var proteinLevels = [];
 
+        //Store user's selections as an object in browser
+        var  viewer =  cast(WorkspaceApplication.getApplication().getActiveProgram(), ChromoHubViewer);
+        var stateObj = {
+            'protein_option': form.form.findField('protein_option').lastValue,
+            'cancer_type': form.form.findField('cancer_type').lastValue,
+            'protein_level_high': form.form.findField('protein_level_high').lastValue,
+            'protein_level_medium': form.form.findField('protein_level_medium').lastValue,
+            'protein_level_low': form.form.findField('protein_level_low').lastValue,
+            'protein_level_not_detected': form.form.findField('protein_level_not_detected').lastValue,
+            'perc_protein_option': form.form.findField('perc_protein_option').lastValue,
+            'perc_protein_level_high': form.form.findField('perc_protein_level_high').lastValue,
+            'perc_protein_level_medium': form.form.findField('perc_protein_level_medium').lastValue,
+            'perc_protein_level_low': form.form.findField('perc_protein_level_low').lastValue,
+            'in_percentage': form.form.findField('in_percentage').lastValue
+        };
+        viewer.registerState(annotation, stateObj);
+        viewer.saveCurrentWorkspace();
+
         if(form.form.findField('perc_protein_option').lastValue){
             annotationManager.cleanAnnotResults(30);
             tumorLevelPercentageFunction(30, form, tree_type, family, searchGenes, annotationManager, cb);

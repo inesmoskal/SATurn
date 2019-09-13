@@ -121,13 +121,21 @@ class InhibitorAnnotation {
     }
 
     static function inhibitorsFunction (annotation:Int,form:Dynamic,tree_type:String, family:String,searchGenes:Array<Dynamic>,annotationManager:ChromoHubAnnotationManager,callback : Dynamic->String->Void){
-
         var ligand_select:String;
         var chemi_sel=true;
 
         var aux:Dynamic;
 
         if(form!=null){
+            //Store user's selections as an object in browser
+            var  viewer =  cast(WorkspaceApplication.getApplication().getActiveProgram(), ChromoHubViewer);
+            var stateObj = {
+                'ligand_select': form.form.findField('ligand_select').lastValue,
+                'chemi_sel': form.form.findField('chemi_sel').lastValue
+            };
+            viewer.registerState(annotation, stateObj);
+            viewer.saveCurrentWorkspace();
+
             aux=form.form.findField('ligand_select');
             ligand_select=aux.lastValue.inhibitors;
 

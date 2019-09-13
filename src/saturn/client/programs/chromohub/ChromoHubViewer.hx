@@ -144,8 +144,16 @@ class ChromoHubViewer  extends SimpleExtJSProgram  {
 
     public var annotationManager : ChromoHubAnnotationManager;
 
+    public var stateCache :Map<Int, Dynamic> = new Map<Int, Dynamic>();
+
+    public var ready : Bool = false;
+
     public function new(){
         super();
+    }
+
+    public function getAnnotationManager() : ChromoHubAnnotationManager {
+        return this.annotationManager;
     }
 
     override public function emptyInit() {
@@ -213,7 +221,6 @@ class ChromoHubViewer  extends SimpleExtJSProgram  {
 			}],
             listeners : {
                 'afterrender' : function() { self.initialiseDOMComponent(); },
-                'render': afterRender,
 
                 'resize': function(){ redraw(); },
                 /*'keypress': {
@@ -234,12 +241,12 @@ class ChromoHubViewer  extends SimpleExtJSProgram  {
         registerDropFolder('Sequences', WorkspaceObject, true);
     }
 
-    private function afterRender(panel) {
+    override public function initialiseDOMComponent() {
+        super.initialiseDOMComponent();
 
-        var moving : String = 'No';
-        var leaving=false;
-        var current_x,current_y, current_mx, current_my, new_x,new_y, new_mx, new_my: Dynamic;
+        ready = true;
 
+        //setTree();
     }
 
     public function newposition(new_x:Dynamic, new_y:Dynamic){
@@ -430,6 +437,7 @@ class ChromoHubViewer  extends SimpleExtJSProgram  {
             }
         }
     }
+
 
     public function zoomIn(activeAnnotation:Dynamic){
         if(standaloneMode){
@@ -1769,10 +1777,16 @@ class ChromoHubViewer  extends SimpleExtJSProgram  {
         super.setActiveObject(objectId);
 
 
-        this.standaloneMode = getObject().standloneMode;
+        setTree();
+    }
 
-        if(!standaloneMode){
-            setTreeFromNewickStr(getObject().newickStr);
+    public function setTree(){
+        if(ready){
+            this.standaloneMode = getObject().standaloneMode;
+
+            if(!standaloneMode){
+                setTreeFromNewickStr(getObject().newickStr);
+            }
         }
     }
 
@@ -3083,10 +3097,8 @@ class ChromoHubViewer  extends SimpleExtJSProgram  {
         standaloneMode = true;
         #end
 
-        CommonCore.getContent(
-            "/static/json/ViewOptionsBtns.json",function(content) {
-                var d : Dynamic = WorkspaceApplication.getApplication().getActiveProgram();
-                d.annotationManager.jsonFile = haxe.Json.parse(content);
+        CommonCore.getContent("/static/json/ViewOptionsBtns.json",function(content) {
+                this.annotationManager.jsonFile = haxe.Json.parse(content);
 
 
                 getJSonTips();
@@ -3103,8 +3115,7 @@ class ChromoHubViewer  extends SimpleExtJSProgram  {
 
         if(standaloneMode){
             CommonCore.getContent("/static/json/tipsHtmlData.json",function(content) {
-                var d : Dynamic = WorkspaceApplication.getApplication().getActiveProgram();
-                d.jsonTipsFile = haxe.Json.parse(content);
+                this.jsonTipsFile = haxe.Json.parse(content);
 
                 WorkspaceApplication.getApplication().setMode(ScreenMode.SINGLE_APP);
 
@@ -3140,7 +3151,31 @@ class ChromoHubViewer  extends SimpleExtJSProgram  {
         }
     }
 
+    //Function that saves current workspace session
+    public function saveCurrentWorkspace() : Void {
+        getApplication().getWorkspace().saveWorkspace();
+    }
 
+    public function registerState(annotation : Int, state : Dynamic){
+        stateCache.set(annotation, state);
+    }
+
+    override public function serialise() : Dynamic {
+        var obj = super.serialise();
+        //obj.test = 'Leo test';
+
+        obj.stateCache = this.stateCache;
+        //Clear stateCache on browser refresh
+        obj.stateCache = [
+            0 => 'clear'
+        ];
+
+        return obj;
+    }
+
+    override public function deserialise(obj : Dynamic){
+        this.stateCache = obj.stateCache;
+    }
 
 }
 

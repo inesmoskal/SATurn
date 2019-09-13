@@ -166,11 +166,20 @@ class SHRNAAnnotation {
     }
 
     static function shRnaFunction (annotation:Int,form:Dynamic,tree_type:String, family:String,searchGenes:Array<Dynamic>,annotationManager: ChromoHubAnnotationManager,callback : Dynamic->String->Void){
-
         var aux:Dynamic;
         var shrna_flag=false;
 
         if(form!=null){
+            //Store user's selections as an object in browser
+            var  viewer =  cast(WorkspaceApplication.getApplication().getActiveProgram(), ChromoHubViewer);
+            var stateObj = {
+                'shrna_cutoff': form.form.findField('shrna_cutoff').lastValue,
+                'shrna_num_cutoff': form.form.findField('shrna_num_cutoff').lastValue,
+                'shrna_flag': form.form.findField('shrna_flag').lastValue
+            };
+            viewer.registerState(annotation, stateObj);
+            viewer.saveCurrentWorkspace();
+
             aux=form.form.findField('shrna_flag');
             var flag=aux.lastValue;
             if(flag==true) shrna_flag=true;

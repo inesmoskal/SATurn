@@ -59,8 +59,10 @@ class Workspace implements BuildingBlock{
     var wkModel : Dynamic;
 
     var reloading = false;
+
+    var onReady : Dynamic;
 	
-    public function new(){
+    public function new(onReady : Dynamic = null){
         theListeners = new List<WorkspaceListener>();
         theObjects = new Map<String, WorkspaceObject<Dynamic>>();
 
@@ -85,6 +87,8 @@ class Workspace implements BuildingBlock{
             ],
             idProperty : 'objectId'
         });
+
+        this.onReady = onReady;
         
         initialiseComponent();
 		
@@ -517,13 +521,13 @@ class Workspace implements BuildingBlock{
 	
 	public function initialiseWorkspaceStore() {
 		if(WorkspaceApplication.getApplication().isNaked() == false){
-			theWorkspaceDatabase = new WorkspaceStore("WORKSPACE_SESSIONS", 1, function(e) { WorkspaceApplication.getApplication().showMessage('',e); } );
+			theWorkspaceDatabase = new WorkspaceStore("WORKSPACE_SESSIONS", 1, function(e) { WorkspaceApplication.getApplication().showMessage('',e); }, this.onReady );
 		}
 	}
 
     public function installRemoteWorkspaceStore(){
         if(WorkspaceApplication.getApplication().isNaked() == false){
-            theWorkspaceDatabase = new WorkspaceStoreProvider("WORKSPACE_SESSIONS", 1, function(e) { WorkspaceApplication.getApplication().showMessage('',e); } );
+            theWorkspaceDatabase = new WorkspaceStoreProvider("WORKSPACE_SESSIONS", 1, function(e) { WorkspaceApplication.getApplication().showMessage('',e); }, this.onReady );
         }
     }
 	
@@ -2289,11 +2293,13 @@ class WorkspaceStore {
 	
 	var conn : Dynamic;
     var onErrorAction : Dynamic;
+    var onSuccessAction : Dynamic;
 	
-	public function new(databaseName : String, version : Int, onErrorAction) {
+	public function new(databaseName : String, version : Int, onErrorAction, onSuccessAction) {
 		this.databaseName = databaseName;
 		this.version = version;
         this.onErrorAction = onErrorAction;
+        this.onSuccessAction = onSuccessAction;
 		
 		init();
 	}
@@ -2318,6 +2324,8 @@ class WorkspaceStore {
 
             request.onsuccess = function(e) {
                 conn = e.target.result;
+
+                onSuccessAction();
             }
 
             request.onerror = onErrorAction;
@@ -2367,8 +2375,8 @@ class WorkspaceStore {
 
 class WorkspaceStoreProvider extends WorkspaceStore {
 
-    public function new(databaseName : String, version : Int, onErrorAction) {
-        super(databaseName, version, onErrorAction);
+    public function new(databaseName : String, version : Int, onErrorAction, onSuccessAction) {
+        super(databaseName, version, onErrorAction, onSuccessAction);
 
 
     }

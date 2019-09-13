@@ -427,34 +427,31 @@ class WorkspaceApplication {
     }
     
     function initApplication(){
-        createCentralPanel();
-        createSearchBar(searchBarTitle);
-        createMenuBar();
-        createNavigationPanel(navigationTitle);
-        createMiddleSouthPanel(southTitle);
-        createSouthPanel(southTitle);
-        createDetailsPanel(detailsTitle);
+        theWorkspace = new Workspace(function(){
+            createCentralPanel();
+            createSearchBar(searchBarTitle);
+            createMenuBar();
+            createNavigationPanel(navigationTitle);
+            createMiddleSouthPanel(southTitle);
+            createSouthPanel(southTitle);
+            createDetailsPanel(detailsTitle);
 
 
-        createTabContainer(tabContainerTitle);
-        createCentralInfoPanel();
-        
-        registerPrograms();
-        
-        populateNewMenu();
+            createTabContainer(tabContainerTitle);
+            createCentralInfoPanel();
 
-        var quickLaunchItems = this.getProgramRegistry().getQuickLaunchItems();
+            registerPrograms();
 
-        for(quickLaunchItem in quickLaunchItems){
-            getQuickLaunchBar().add(quickLaunchItem);
-        }
+            populateNewMenu();
 
-        /*ClientCore.getClientCore().refreshSession(function(err : String){
-            if(err != null){
-                debug(err);
+            var quickLaunchItems = this.getProgramRegistry().getQuickLaunchItems();
+
+            for(quickLaunchItem in quickLaunchItems){
+                getQuickLaunchBar().add(quickLaunchItem);
             }
-        });*/
 
+            afterLoad();
+        });
     }
     
     function createMenuBar(){

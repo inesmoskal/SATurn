@@ -263,7 +263,6 @@ class SomaticMutationAnnotation {
     }
 
     static function somaticMutFunctionContinue (annotation:Int,form:Dynamic,tree_type:String, family:String, searchGenes:Array<Dynamic>,annotationManager:ChromoHubAnnotationManager,mut_sig_arr:Map<String,Int>,callback : Dynamic->String->Void){
-
         var mutsig=false;
         var mutated_dynamic=false;
         var mutated_cutoff_box=false;
@@ -277,6 +276,19 @@ class SomaticMutationAnnotation {
         var aux:Dynamic;
 
         if(form!=null){
+            //Store user's selections as an object in browser
+            var  viewer =  cast(WorkspaceApplication.getApplication().getActiveProgram(), ChromoHubViewer);
+            var stateObj = {
+                'sm_mutated_select': form.form.findField('sm_mutated_select').lastValue,
+                'sm_mutated_cutoff': form.form.findField('sm_mutated_cutoff').lastValue,
+                'sm_patient_cutoff': form.form.findField('sm_patient_cutoff').lastValue,
+                'sm_results_cutoff': form.form.findField('sm_results_cutoff').lastValue,
+                'sm_nonsilent': form.form.findField('sm_nonsilent').lastValue,
+                'sm_validated': form.form.findField('sm_validated').lastValue
+            };
+            viewer.registerState(annotation, stateObj);
+            viewer.saveCurrentWorkspace();
+
             aux=form.form.findField('sm_mutated_select');
             switch (aux.lastValue.structure){
                 case 1: mutsig=true;

@@ -143,13 +143,13 @@ class ChromoHubHooks {
         var lig_cond = "";
 
         switch(ligand_select){
-            case "1":
+            case 1:
                 lig_cond = "";
-            case "5":
+            case 5:
                 lig_cond = " AND tlj.ic50 < 5";
-            case "2":
+            case 2:
                 lig_cond = " AND tlj.ic50 < 2";
-            case "0":
+            case 0:
                 lig_cond = " AND tlj.ic50 < 0.5";
         }
 
@@ -592,12 +592,19 @@ class ChromoHubHooks {
                                     var count = results[i].count;
                                     var total = results[i].total;
                                     var rank_comment= results[i].rank;
-                                    var rank_exp = rank_comment.split("/");
-                                    var rank = rank_exp[0];
 
-                                    var total_genes = rank_exp[1];
-                                    var num=seqexp_rank_cutoff;
-                                    var res=rank - num;
+                                    var rank_exp = [];
+                                    var total_genes = 0;
+                                    var res = 0;
+
+                                    if (rank_comment != null) {
+                                        rank_exp = rank_comment.split("/");
+                                        var rank = rank_exp[0];
+                                        total_genes = rank_exp[1];
+                                        var num=seqexp_rank_cutoff;
+                                        res=rank - num;
+                                    }
+
                                     if (seqexp_rank_cutoff!=null && (res>0)) {
                                         tobeadded=false;
                                     }
