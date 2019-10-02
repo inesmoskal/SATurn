@@ -1062,7 +1062,7 @@ class ChromoHubHooks {
                 AND c.gene_id = t.geneid";
         }
 
-        if(cancerTypes[0] != 'All'){
+        if(cancerTypes[0].toLowerCase() != 'all'){
             var placeHolders = [];
             for(cancerType in cancerTypes){
                 placeHolders.push('?');
@@ -1123,7 +1123,7 @@ class ChromoHubHooks {
             ";
         }
 
-        if(cancerTypes[0] != 'All'){
+        if(cancerTypes[0].toLowerCase() != 'all'){
             var placeHolders = [];
             for(cancerType in cancerTypes){
                 placeHolders.push('?');
@@ -1174,7 +1174,7 @@ class ChromoHubHooks {
                 AND c.uniprot_id = t.uniprot";
         }
 
-        if(cancerTypes[0] != 'All'){
+        if(cancerTypes[0].toLowerCase() != 'all'){
             var placeHolders = [];
             for(cancerType in cancerTypes){
                 placeHolders.push('?');
@@ -1250,7 +1250,7 @@ class ChromoHubHooks {
         }
 
         // Append tissue type constraints
-        if(tissueTypes[0] != 'All'){
+        if(tissueTypes[0].toLowerCase() != 'all'){
             var placeHolders = [];
             for(tissueType in tissueTypes){
                 placeHolders.push('?');
@@ -1261,7 +1261,7 @@ class ChromoHubHooks {
         }
 
         // Append cell type constraints
-        if(cellTypes[0] != 'All'){
+        if(cellTypes[0].toLowerCase() != 'all'){
             var placeHolders = [];
             for(cellType in cellTypes){
                 placeHolders.push('?');
@@ -1329,7 +1329,7 @@ class ChromoHubHooks {
         }
 
         // Append tissue type constraints
-        if(tissueTypes[0] != 'All'){
+        if(tissueTypes[0].toLowerCase() != 'all'){
             var placeHolders = [];
             for(tissueType in tissueTypes){
                 placeHolders.push('?');
@@ -1340,7 +1340,7 @@ class ChromoHubHooks {
         }
 
         // Append cell type constraints
-        if(cellTypes[0] != 'All'){
+        if(cellTypes[0].toLowerCase() != 'all'){
             var placeHolders = [];
             for(cellType in cellTypes){
                 placeHolders.push('?');

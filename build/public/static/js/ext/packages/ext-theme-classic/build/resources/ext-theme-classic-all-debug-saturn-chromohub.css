@@ -31252,6 +31252,30 @@ a.x-color-picker-item:hover {
 	width: 255px;
 }
 
+.protein-levels-normal-tissues input {
+	width: 185px;
+}
+
+.protein-levels-normal-tissues .x-form-item-body {
+	max-width: 300px;
+}
+
+.protein-levels-normal-cell-type input {
+	width: 170px;
+}
+
+.protein-levels-normal-cell-type .x-form-item-body {
+	max-width: 300px;
+}
+
+.protein-cancer-type input {
+	width: 170px;
+}
+
+.protein-cancer-type .x-form-item-body {
+	max-width: 300px;
+}
+
 /** Responsive layout */
 
 @media screen and (max-width: 767px) {

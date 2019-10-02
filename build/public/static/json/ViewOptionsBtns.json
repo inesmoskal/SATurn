@@ -390,7 +390,7 @@
                       "listConfig": [
                         {"width": "200px"}
                       ],
-                      "matchFieldWidth" : false,
+                      "matchFieldWidth" : true,
                       "labelSeparator" : "",
                       "cls":"x-form-item-finishgroup protein-cancer-type",
                       "queryMode": "local",
@@ -1069,14 +1069,11 @@
                       "name": "tissues",
 											"id": "tissues",
                       "fieldLabel": "Tissue",
-                      "listConfig": [
-                        {"width": "200px"}
-                      ],
-                      "matchFieldWidth" : false,
                       "labelSeparator": "",
+											"cls": "protein-levels-normal-tissues",
                       "queryMode": "local",
                       "store": [
-                        "All",
+                        "ALL",
                         "adrenal gland",
                         "appendix",
                         "bone marrow",
@@ -1148,11 +1145,12 @@
                       "listConfig": [
                         {"width": "200px"}
                       ],
-                      "matchFieldWidth" : false,
+                      "matchFieldWidth" : true,
                       "labelSeparator": "",
+											"cls": "protein-levels-normal-cell-type",
                       "queryMode": "local",
                       "store": [
-                        "All",
+                        "ALL",
                         "adipocytes",
                         "bile duct cells",
                         "cells in anterior ",
